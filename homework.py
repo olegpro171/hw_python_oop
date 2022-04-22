@@ -14,15 +14,18 @@ class InfoMessage:
         self.calories = calories
 
     def get_message(self) -> str:
-        """Функция для получения строкового представления объекта InfoMessage."""
+        """
+        Функция для получения строкового
+        представления объекта InfoMessage.
+        """
         duration_rounded = "%.3f" % self.duration
         distance_rounded = "%.3f" % self.distance
         speed_rounded = "%.3f" % self.speed
         calories_rounded = "%.3f" % self.calories
-        result_string = (f"Тип тренировки: {self.training_type}; " +
-                         f"Длительность: {duration_rounded} ч.; " +
-                         f"Дистанция: {distance_rounded} км; " +
-                         f"Ср. скорость: {speed_rounded} км/ч; " +
+        result_string = (f"Тип тренировки: {self.training_type}; "
+                         f"Длительность: {duration_rounded} ч.; "
+                         f"Дистанция: {distance_rounded} км; "
+                         f"Ср. скорость: {speed_rounded} км/ч; "
                          f"Потрачено ккал: {calories_rounded}.")
         return result_string
 
@@ -84,8 +87,8 @@ class Running(Training):
         mean_speed = self.get_mean_speed()
         coeff_calorie_1 = 18
         coeff_calorie_2 = 20
-        result = ((coeff_calorie_1 * mean_speed - coeff_calorie_2) *
-                  self.weight / self.M_IN_KM * (self.duration * 60))
+        result = ((coeff_calorie_1 * mean_speed - coeff_calorie_2)
+                  * self.weight / self.M_IN_KM * (self.duration * 60))
         return result
 
 
@@ -104,9 +107,9 @@ class SportsWalking(Training):
         """Вернуть результат расчета затраченных калорий."""
         coeffs = (0.035, 2, 0.029)
         mean_speed = self.get_mean_speed()
-        result = ((coeffs[0] * self.weight +
-                   (mean_speed ** coeffs[1] // self.height) * coeffs[2] *
-                   self.weight) * (self.duration * 60))
+        result = ((coeffs[0] * self.weight
+                  + (mean_speed ** coeffs[1] // self.height) * coeffs[2]
+                  * self.weight) * (self.duration * 60))
         return result
 
 
@@ -127,8 +130,8 @@ class Swimming(Training):
 
     def get_mean_speed(self) -> float:
         """Вернуть результат расчета средней скорости."""
-        result = (self.length_pool * self.count_pool /
-                  self.M_IN_KM / self.duration)
+        result = (self.length_pool * self.count_pool
+                  / self.M_IN_KM / self.duration)
         return result
 
     def get_spent_calories(self) -> float:
