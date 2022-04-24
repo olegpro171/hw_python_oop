@@ -133,7 +133,7 @@ class Swimming(Training):
                 * self.CAL_COEFF_SWIMMING_2 * self.weight)
 
 
-TRAINING_DICT: Dict[str, Type[Swimming | Running | SportsWalking]] = {
+TRAINING_DICT: Dict[str, Type[Training]] = {
     'SWM': Swimming,
     'RUN': Running,
     'WLK': SportsWalking,
