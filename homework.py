@@ -12,18 +12,18 @@ class InfoMessage:
     speed: float
     calories: float
 
+    MESSAGE_STRING: str = ("Тип тренировки: {training_type}; "
+                           "Длительность: {duration:.3f} ч.; "
+                           "Дистанция: {distance:.3f} км; "
+                           "Ср. скорость: {speed:.3f} км/ч; "
+                           "Потрачено ккал: {calories:.3f}.")
+
     def get_message(self) -> str:
         """
         Функция для получения строкового
         представления объекта InfoMessage.
         """
-        result_string = ("Тип тренировки: {}; "
-                         "Длительность: {:.3f} ч.; "
-                         "Дистанция: {:.3f} км; "
-                         "Ср. скорость: {:.3f} км/ч; "
-                         "Потрачено ккал: {:.3f}.".format
-                         (*asdict(self).values()))
-        return result_string
+        return self.MESSAGE_STRING.format(**asdict(self))
 
 
 class Training:
@@ -51,7 +51,8 @@ class Training:
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        raise NotImplementedError
+        raise NotImplementedError('Метод ''get_spent_calories'''
+                                  'реализован только у наследников')
 
     def show_training_info(self) -> InfoMessage:
         """Вернуть информационное сообщение о выполненной тренировке."""
@@ -65,8 +66,8 @@ class Training:
 class Running(Training):
     """Тренировка: бег."""
 
-    CAL_COEFF_RUNNING_1: float = 18
-    CAL_COEFF_RUNNING_2: float = 20
+    CAL_RUN_SPEED_COEF: float = 18
+    CAL_RUN_SPEED_PARAM: float = 20
 
     def __init__(self,
                  action: int,
@@ -76,8 +77,8 @@ class Running(Training):
 
     def get_spent_calories(self) -> float:
         """Вернуть результат расчета затраченных калорий."""
-        return ((self.CAL_COEFF_RUNNING_1 * self.get_mean_speed()
-                 - self.CAL_COEFF_RUNNING_2)
+        return ((self.CAL_RUN_SPEED_COEF * self.get_mean_speed()
+                 - self.CAL_RUN_SPEED_PARAM)
                 * self.weight / self.M_IN_KM
                 * (self.duration * self.MIN_IN_H))
 
@@ -85,9 +86,9 @@ class Running(Training):
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
 
-    CAL_COEFF_WALKING_1: float = 0.035
-    CAL_COEFF_WALKING_2: float = 2
-    CAL_COEFF_WALKING_3: float = 0.029
+    CAL_WALKING_WEIGHT_COEF: float = 0.035
+    CAL_WLK_SPEED_POW: float = 2
+    CAL_WLK_SPEEDHEIGHT_COEF: float = 0.029
 
     def __init__(self,
                  action: int,
@@ -99,18 +100,18 @@ class SportsWalking(Training):
 
     def get_spent_calories(self) -> float:
         """Вернуть результат расчета затраченных калорий."""
-        return ((self.CAL_COEFF_WALKING_1 * self.weight
-                 + (self.get_mean_speed() ** self.CAL_COEFF_WALKING_2
-                    // self.height) * self.CAL_COEFF_WALKING_3 * self.weight)
-                * (self.duration * self.MIN_IN_H))
+        return ((self.CAL_WALKING_WEIGHT_COEF * self.weight
+                 + (self.get_mean_speed() ** self.CAL_WLK_SPEED_POW
+                    // self.height) * self.CAL_WLK_SPEEDHEIGHT_COEF
+                 * self.weight) * (self.duration * self.MIN_IN_H))
 
 
 class Swimming(Training):
     """Тренировка: плавание."""
 
     LEN_STEP: float = 1.38
-    CAL_COEFF_SWIMMING_1: float = 1.1
-    CAL_COEFF_SWIMMING_2: float = 2
+    CAL_SWM_SPEED_PARAM: float = 1.1
+    CAL_SWM_WEIGHT_COEF: float = 2
 
     def __init__(self,
                  action: int,
@@ -129,23 +130,21 @@ class Swimming(Training):
 
     def get_spent_calories(self) -> float:
         """Вернуть результат расчета затраченных калорий."""
-        return ((self.get_mean_speed() + self.CAL_COEFF_SWIMMING_1)
-                * self.CAL_COEFF_SWIMMING_2 * self.weight)
-
-
-TRAINING_DICT: Dict[str, Type[Training]] = {
-    'SWM': Swimming,
-    'RUN': Running,
-    'WLK': SportsWalking,
-}
+        return ((self.get_mean_speed() + self.CAL_SWM_SPEED_PARAM)
+                * self.CAL_SWM_WEIGHT_COEF * self.weight)
 
 
 def read_package(workout_type: str, data: list) -> Training:
+    _TRAINING_DICT: Dict[str, Type['Training']] = {
+        'SWM': Swimming,
+        'RUN': Running,
+        'WLK': SportsWalking,
+    }
+
     """Прочитать данные полученные от датчиков."""
-    if workout_type not in TRAINING_DICT.keys():
-        raise ValueError('Передан неверный код тренировки.')
-    result_object = TRAINING_DICT[workout_type](*data)
-    return result_object
+    if workout_type not in _TRAINING_DICT:
+        raise KeyError('Передан неверный код тренировки.')
+    return _TRAINING_DICT[workout_type](*data)
 
 
 def main(training: Training) -> None:
