@@ -78,7 +78,7 @@ class Running(Training):
     def get_spent_calories(self) -> float:
         """Вернуть результат расчета затраченных калорий."""
         return ((self.CAL_RUN_SPEED_COEF * self.get_mean_speed()
-                 - self.CAL_RUN_SPEED_PARAM)
+                - self.CAL_RUN_SPEED_PARAM)
                 * self.weight / self.M_IN_KM
                 * (self.duration * self.MIN_IN_H))
 
@@ -135,22 +135,21 @@ class Swimming(Training):
 
 
 def read_package(workout_type: str, data: list) -> Training:
+    """Прочитать данные полученные от датчиков."""
     _TRAINING_DICT: Dict[str, Type['Training']] = {
         'SWM': Swimming,
         'RUN': Running,
         'WLK': SportsWalking,
     }
-
-    """Прочитать данные полученные от датчиков."""
     if workout_type not in _TRAINING_DICT:
-        raise KeyError('Передан неверный код тренировки.')
+        raise KeyError(f'Получен неверный код тренировки: {workout_type}. '
+                       'Доступные коды: ' + ', '.join(_TRAINING_DICT.keys()))
     return _TRAINING_DICT[workout_type](*data)
 
 
 def main(training: Training) -> None:
     """Главная функция."""
-    info = training.show_training_info()
-    print(info.get_message())
+    print(training.show_training_info().get_message())
 
 
 if __name__ == '__main__':
